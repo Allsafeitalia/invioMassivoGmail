@@ -1,0 +1,19 @@
+function inviaEmailDiPresentazione() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Destinatari');
+  const data = sheet.getDataRange().getValues();
+
+  const oggetto = "La nostra presentazione"; // Oggetto dell'email
+  const corpoBase = "Ciao {{nome}},\n\nQuesta è una breve presentazione dei nostri servizi...\n\nCordiali saluti,\nGiuseppe";
+
+  // Itera a partire dalla riga 2 per saltare l'intestazione
+  for (let i = 1; i < data.length; i++) {
+    const nome = data[i][0]; // Prima colonna: Nome
+    const email = data[i][1]; // Seconda colonna: Email
+
+    // Sostituisce {{nome}} nel modello con il nome del destinatario specifico
+    let corpo = corpoBase.replace('{{nome}}', nome);
+
+    // Invio dell'email
+    GmailApp.sendEmail(email, oggetto, corpo);
+  }
+}
