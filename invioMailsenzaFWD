@@ -1,4 +1,4 @@
-function inviaEmailConLayoutHTML() {
+function inviaEmailDaBozzaConDuplicato() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Destinatari');
   if (!sheet) {
     Logger.log("Il foglio 'Destinatari' non è stato trovato. Assicurati che il foglio esista e che il nome sia corretto.");
@@ -6,36 +6,26 @@ function inviaEmailConLayoutHTML() {
   }
 
   const data = sheet.getDataRange().getValues();
-  const oggetto = "Il tuo regalo aziendale scontato del 25% Offerta Limitata 🎁"; // Oggetto dell'email
+  const parteNomeBozza = "Il tuo regalo aziendale scontato del 25%"; // Parte del nome della bozza
+  const bozzaOriginale = GmailApp.getDraftMessages().find(draft => draft.getSubject().includes(parteNomeBozza));
 
-  // Inserisci l'HTML copiato dalla bozza qui
-  const corpoHTML = `
-    <html>
-      <body style="background-color: #f3f3f3; padding: 20px;">
-        <table width="100%" style="max-width: 600px; background: #fff; border-radius: 8px;">
-          <tr>
-            <td style="text-align: center;">
-              <img src="https://example.com/image1.jpg" alt="Banner" style="width: 100%; max-width: 600px;">
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 20px; color: #333;">
-              <p>Caro Cliente,</p>
-              <p>Questa è la nostra offerta speciale per te!</p>
-            </td>
-          </tr>
-        </table>
-      </body>
-    </html>
-  `;
+  if (!bozzaOriginale) {
+    Logger.log("Bozza non trovata. Assicurati che esista una bozza con il nome specificato.");
+    return;
+  }
 
-  // Itera a partire dalla riga 2 per saltare l'intestazione
+  // Ciclo per ogni destinatario
   for (let i = 1; i < data.length; i++) {
     const email = data[i][1]; // Seconda colonna: Email
 
-    // Invia l'email con HTML copiato
-    GmailApp.sendEmail(email, oggetto, "", {
-      htmlBody: corpoHTML
+    // Crea una nuova bozza basata sulla bozza originale
+    const nuovaBozza = GmailApp.createDraft(email, bozzaOriginale.getSubject(), "", {
+      htmlBody: bozzaOriginale.getBody(),
+      attachments: bozzaOriginale.getAttachments()
     });
+
+    // Recupera la bozza appena creata e inviala
+    nuovaBozza.send();
   }
 }
+
