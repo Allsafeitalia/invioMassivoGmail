@@ -1,4 +1,4 @@
-function inviaEmailDaBozzaConDuplicato() {
+function inviaEmailDaBozzaConNuovaBozzaPerDestinatario() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Destinatari');
   if (!sheet) {
     Logger.log("Il foglio 'Destinatari' non è stato trovato. Assicurati che il foglio esista e che il nome sia corretto.");
@@ -14,18 +14,27 @@ function inviaEmailDaBozzaConDuplicato() {
     return;
   }
 
+  const oggetto = bozzaOriginale.getSubject();
+  const corpoHTML = bozzaOriginale.getBody();
+  const allegati = bozzaOriginale.getAttachments();
+
   // Ciclo per ogni destinatario
   for (let i = 1; i < data.length; i++) {
-    const email = data[i][1]; // Seconda colonna: Email
+    const email = data[i][1]; // Assicurati che questa sia la colonna corretta per l'email
 
-    // Crea una nuova bozza basata sulla bozza originale
-    const nuovaBozza = GmailApp.createDraft(email, bozzaOriginale.getSubject(), "", {
-      htmlBody: bozzaOriginale.getBody(),
-      attachments: bozzaOriginale.getAttachments()
-    });
+    if (email && email.includes("@")) {  // Controlla che l'indirizzo email sia valido
+      // Crea una nuova bozza per ogni destinatario utilizzando il contenuto della bozza originale
+      const nuovaBozza = GmailApp.createDraft(email, oggetto, "", {
+        htmlBody: corpoHTML,
+        attachments: allegati
+      });
 
-    // Recupera la bozza appena creata e inviala
-    nuovaBozza.send();
+      // Invia la bozza appena creata
+      nuovaBozza.send();
+    } else {
+      Logger.log("Indirizzo email non valido o mancante alla riga " + (i + 1));
+    }
   }
 }
+
 
