@@ -1,0 +1,93 @@
+function inviaEmailConLayoutHTML() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Destinatari');
+  if (!sheet) {
+    Logger.log("Il foglio 'Destinatari' non è stato trovato. Assicurati che il foglio esista e che il nome sia corretto.");
+    return;
+  }
+
+  const data = sheet.getDataRange().getValues();
+
+  // HTML del contenuto dell'email
+  const corpoHTML = `
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Email Promozione</title>
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+    </head>
+    <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff; display: flex; justify-content: center; align-items: center; padding: 20px;">
+      <div style="max-width: 600px; background-color: #8B0000; color: #ffffff; border-radius: 10px; overflow: hidden;">
+        <div style="padding: 20px; text-align: center;">
+          <h1 style="font-size: 2.5em; font-weight: 600; margin: 0; font-family: 'Poppins', sans-serif;">
+            25% DI SCONTO SU TUTTI I PRODOTTI
+          </h1>
+          <p style="font-size: 1em; margin-top: 10px; line-height: 1.5;">
+            Non perdere l'opportunità di rendere speciale il tuo regalo aziendale. Scegli le nostre composizioni e bottiglie oppure personalizza la tua scatola.
+          </p>
+          <a href="https://shop.amarolucano.it/pages/promo-regali-aziendali" 
+             style="display: inline-block; padding: 12px 24px; margin-top: 15px; font-size: 1em; color: #ffffff; background-color: #d9534f; text-decoration: none; border-radius: 5px;">
+             Vai all'offerta
+          </a>
+        </div>
+        <div style="text-align: center;">
+          <img src="https://pygreco.it/lucano/natalet.png" alt="Immagine Promozione" style="width: 100%; height: auto;">
+        </div>
+        <div style="background-color: #ffffff; padding: 20px; color: #000000;">
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 10px;">
+            <div style="flex: 1 1 45%; max-width: 100%; box-sizing: border-box; margin-bottom: 20px; text-align: center;">
+              <div style="background-color: rgba(255, 255, 255, 0.5); border-radius: 10px; padding: 10px;">
+                <img src="https://pygreco.it/lucano/composizione1" alt="Prodotto 1" style="width: 100%; max-width: 150px; height: auto;">
+              </div>
+              <h3 style="font-size: 1.2em; font-weight: bold; margin: 10px 0 5px;">Composizione Natale 1</h3>
+              <p style="font-size: 0.9em;">Dragees Sassi, Dragees Amaro Lucano, Tronchetto Amaro Anniversario, Bottiglia di Natale Limitates Edition 2024, Aperitivo Lucano.</p>
+            </div>
+            <div style="flex: 1 1 45%; max-width: 100%; box-sizing: border-box; margin-bottom: 20px; text-align: center;">
+              <div style="background-color: rgba(255, 255, 255, 0.5); border-radius: 10px; padding: 10px;">
+                <img src="https://pygreco.it/lucano/composizione1" alt="Prodotto 2" style="width: 100%; max-width: 150px; height: auto;">
+              </div>
+              <h3 style="font-size: 1.2em; font-weight: bold; margin: 10px 0 5px;">Composizione Natale 2</h3>
+              <p style="font-size: 0.9em;">Dragees Caffè, Dragees Amaro Lucano, Tronchetto Amaro Anniversario, Bottiglia di Natale Limitates Edition 2024, Cordial Anniversario.</p>
+            </div>
+            <div style="flex: 1 1 45%; max-width: 100%; box-sizing: border-box; margin-bottom: 20px; text-align: center;">
+              <div style="background-color: rgba(255, 255, 255, 0.5); border-radius: 10px; padding: 10px;">
+                <img src="https://pygreco.it/lucano/composizione3" alt="Prodotto 3" style="width: 100%; max-width: 150px; height: auto;">
+              </div>
+              <h3 style="font-size: 1.2em; font-weight: bold; margin: 10px 0 5px;">Composizione Natale 3</h3>
+              <p style="font-size: 0.9em;">Coccole Amaro Lucano, Dragees Amaro Lucano, Tronchetto Amaro Anniversario, Bottiglia di Natale Limitates Edition 2024, Amaro Lucano Zero°.</p>
+            </div>
+            <div style="flex: 1 1 45%; max-width: 100%; box-sizing: border-box; margin-bottom: 20px; text-align: center;">
+              <div style="background-color: rgba(255, 255, 255, 0.5); border-radius: 10px; padding: 10px;">
+                <img src="https://pygreco.it/lucano/composizione4" alt="Prodotto 4" style="width: 100%; max-width: 150px; height: auto;">
+              </div>
+              <h3 style="font-size: 1.2em; font-weight: bold; margin: 10px 0 5px;">Composizione Natale 4</h3>
+              <p style="font-size: 0.9em;">Panettone Artigianale di Calciano all'amaro Lucano, Coccole Amaro Lucano, Dragees Amaro Lucano, Tronchetto Amaro Anniversario, Bottiglia di Natale Limitates Edition 2024, Cordial Caffè.</p>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 20px;">
+            <a href="https://shop.amarolucano.it/pages/promo-regali-aziendali" 
+               style="display: inline-block; padding: 15px 30px; font-size: 1em; color: #ffffff; background-color: #d9534f; text-decoration: none; border-radius: 5px;">
+               Scopri le nostre offerte
+            </a>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const oggetto = "🎁 Il tuo regalo aziendale scontato del 25%! 🎁";
+
+  // Ciclo per inviare email a ogni destinatario
+  for (let i = 1; i < data.length; i++) {
+    const email = data[i][1];
+    if (email && email.includes("@")) { 
+      GmailApp.sendEmail(email, oggetto, "", {
+        htmlBody: corpoHTML
+      });
+    } else {
+      Logger.log("Indirizzo email non valido o mancante alla riga " + (i + 1));
+    }
+  }
+}
