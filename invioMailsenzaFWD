@@ -1,0 +1,32 @@
+function inviaEmailDaBozzaSenzaInoltro() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Destinatari');
+  if (!sheet) {
+    Logger.log("Il foglio 'Destinatari' non è stato trovato. Assicurati che il foglio esista e che il nome sia corretto.");
+    return;
+  }
+
+  const data = sheet.getDataRange().getValues();
+  const parteNomeBozza = "Il tuo regalo aziendale scontato del 25%"; // Parte del nome della bozza
+  const bozza = GmailApp.getDraftMessages().find(draft => draft.getSubject().includes(parteNomeBozza));
+
+  if (!bozza) {
+    Logger.log("Bozza non trovata. Assicurati che esista una bozza con il nome specificato.");
+    return;
+  }
+
+  // Ottieni l'oggetto e il corpo della bozza
+  const oggetto = bozza.getSubject();
+  const corpoBase = bozza.getBody();
+  const allegati = bozza.getAttachments();
+
+  // Itera a partire dalla riga 2 per saltare l'intestazione
+  for (let i = 1; i < data.length; i++) {
+    const email = data[i][1]; // Seconda colonna: Email
+
+    // Invia l'email con lo stesso oggetto, corpo e allegati della bozza
+    GmailApp.sendEmail(email, oggetto, "", {
+      htmlBody: corpoBase,
+      attachments: allegati
+    });
+  }
+}
