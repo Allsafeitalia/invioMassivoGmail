@@ -10,7 +10,7 @@ function inviaEmailConLayoutHTML() {
   // HTML del contenuto dell'email
 ;
 
-  const oggetto = "🎁 Il tuo regalo aziendale scontato del 25%! 🎁";
+  const oggetto = "oggetto della mail";
 
   // Ciclo per inviare email a ogni destinatario
   for (let i = 1; i < data.length; i++) {
