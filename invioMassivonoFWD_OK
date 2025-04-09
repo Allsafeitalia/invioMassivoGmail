@@ -1,0 +1,31 @@
+function inviaEmailDirettamenteDaBozza() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Destinatari');
+  if (!sheet) {
+    Logger.log("Il foglio 'Destinatari' non è stato trovato. Assicurati che il foglio esista e che il nome sia corretto.");
+    return;
+  }
+
+  const data = sheet.getDataRange().getValues();
+  const parteNomeBozza = "Il tuo regalo aziendale scontato del 25%";
+  const bozza = GmailApp.getDraftMessages().find(draft => draft.getSubject().includes(parteNomeBozza));
+
+  if (!bozza) {
+    Logger.log("Bozza non trovata. Assicurati che esista una bozza con il nome specificato.");
+    return;
+  }
+
+  const subject = bozza.getSubject();
+  const body = bozza.getBody();       // HTML body
+  const plainBody = bozza.getPlainBody(); // Testo semplice, in caso servisse
+  const allegati = bozza.getAttachments();
+
+  for (let i = 1; i < data.length; i++) {
+    const email = data[i][1];
+    if (email) {
+      GmailApp.sendEmail(email, subject, '', {
+        htmlBody: body,
+        attachments: allegati
+      });
+    }
+  }
+}
